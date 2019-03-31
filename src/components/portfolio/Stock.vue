@@ -11,15 +11,17 @@
                 <div class="panel-body">
                     <div class="pull-left">
                         <input type="number" 
-                        class="form-control"
+                         class="form-control"
+                         :class="{danger: insufficientQuantity}"
                          placeholder="Quantity"
-                         v-model="quantity">
+                         v-model.number="quantity">
                     </div>
                     <div class="pull-right">
-                        <button class="btn btn-danger"
+                        <button class="btn btn-sm btn-danger"
                         @click="sellStock()"
-                        :disabled="checkQuantity"
-                        >Sell
+                        :disabled="insufficientQuantity || checkQuantity"
+                        >
+                        {{ insufficientQuantity ? 'Not Available More' : 'Sell'}}
                         </button>
                     </div>
                 </div>
@@ -48,6 +50,7 @@ export default {
                 stockPrice: this.stock.price,
                 quantity: this.quantity
             };
+            console.log(order);
             this.sellOrderStock(order);
             this.quantity = 0;
 
@@ -56,6 +59,9 @@ export default {
     computed: {
         checkQuantity() {
             return this.quantity <= 0
+        },
+        insufficientQuantity() {
+            return this.quantity > this.stock.quantity
         }
     }
 }

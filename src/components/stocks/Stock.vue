@@ -9,17 +9,21 @@
                     </h3>
                 </div>
                 <div class="panel-body">
+                   
                     <div class="pull-left">
+                         <label for="number">Quantity</label>
                         <input type="number" 
-                        class="form-control"
+                         class="form-control"
+                        :class="{danger: insufficientFunds}"
                          placeholder="Quantity"
-                         v-model="quantity">
+                         v-model.number="quantity">
                     </div>
                     <div class="pull-right">
-                        <button class="btn btn-success"
+                        <button class="btn btn-sm btn-success"
                         @click="buyStock()"
-                        :disabled="checkQuantity"
-                        >Buy
+                        :disabled="checkQuantity || insufficientFunds"
+                        >
+                        {{ insufficientFunds ? 'No More Funds' : 'Buy' }}
                         </button>
                     </div>
                 </div>
@@ -42,7 +46,7 @@ export default {
                 stockPrice: this.stock.price,
                 quantity: this.quantity
             };
-           
+           console.log(order);
             this.$store.dispatch('buyStock', order);
             this.quantity = 0;
            
@@ -52,11 +56,20 @@ export default {
     computed: {
         checkQuantity() {
             return this.quantity <= 0
+        },
+        funds() {
+            return this.$store.getters.funds;
+        },
+        insufficientFunds() {
+            return this.quantity * this.stock.price > this.funds;
         }
+
     }
 }
 </script>
 
-<style>
-
+<style scoped>
+    .danger{
+        border: 2px solid red;
+    }
 </style>
